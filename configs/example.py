@@ -40,7 +40,7 @@ startDay = 0			# Initial day
 
 #Select the geographic location. Refer to the Astral plugin to see available locations (or give a lon+lat)
 # Use e.g. https://www.latlong.net/
-from astral import Location
+from astral import LocationInfo as Location
 
 location = Location()
 location.solar_depression = 'civil'

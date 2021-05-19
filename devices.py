@@ -129,7 +129,8 @@ class DeviceKettle(Device):
 	
 class DeviceLighting(Device):
 	def simulate(self, timeintervals, occupancy, timestamp):
-		sun = config.location.sun(date=datetime.date.fromtimestamp(timestamp), local=True)
+		from astral.sun import sun
+		sun = sun(config.location.observer, date=datetime.date.fromtimestamp(timestamp))
 		LightingOnProfile = [1] * 1440
 		LightingProfile = [0] * 1440
 		for m in range((sun['sunrise'].hour*60+sun['sunrise'].minute)+random.randint(-10,40), \
@@ -307,6 +308,7 @@ class DeviceVacuumcleaner(Device):
 	
 class DeviceSolarPanel(Device):	
 	def simulate(self, startday, timeintervals, pvArea, pvEfficiency, pvAzimuth, pvElevation):
+		from astral.sun import elevation as solar_elevation, azimuth as solar_azimuth, zenith as solar_zenith
 		pvProfile = []
 
 		time = startday*24*60*60
@@ -314,9 +316,9 @@ class DeviceSolarPanel(Device):
 			modeltime = int(time - (time % config.weather_timebaseDataset) + int(config.weather_timebaseDataset / 2))
 
 			d = datetime.datetime.utcfromtimestamp(1388534400 + modeltime)
-			elevation = config.location.solar_elevation(d)
-			azimuth = config.location.solar_azimuth(d)
-			zenith = config.location.solar_zenith(d)
+			elevation = solar_elevation(config.location.observer, d)
+			azimuth = solar_azimuth(config.location.observer, d)
+			zenith = solar_zenith(config.location.observer, d)
 
 			index = int(math.floor(modeltime/config.weather_timebaseDataset))
 			index = max(index, 0)
